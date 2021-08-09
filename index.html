@@ -10,22 +10,23 @@
 </head>
 
 <body>
-    <h1>Salesforce login - No Verification</h1>
-    <h2>A simple Salesforce login form that allows login without email verification</h2>
+    <main class="container">
+        <h1>Salesforce login - No Verification</h1>
+        <h2>A simple Salesforce login form that allows login without email verification</h2>
 
-    <article>
-        <form onsubmit="return login(this)" id="login_form">
-            <select name="org_type" id="org_type" required>
-                <option value="">Select organisation type</option>
-                <option value="login">Production</option>
-                <option value="test">Sandbox</option>
-            </select>
-            <input type="text" name="username" id="username" placeholder="Username" required>
-            <input type="password" name="password" id="password" placeholder="Password + security token" required>
-            <input type="submit" value="Login">
-        </form>
-    </article>
-
+        <article>
+            <form onsubmit="return login(this)" id="login_form">
+                <select name="org_type" id="org_type" required>
+                    <option value="">Select organisation type</option>
+                    <option value="login">Production</option>
+                    <option value="test">Sandbox</option>
+                </select>
+                <input type="text" name="username" id="username" placeholder="Username" required>
+                <input type="password" name="password" id="password" placeholder="Password + security token" required>
+                <input type="submit" value="Login">
+            </form>
+        </article>
+    </main>
     <script>
         function succesCallback(response) {
             const parser = new DOMParser()
