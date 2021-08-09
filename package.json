@@ -4,7 +4,8 @@
   "description": "A simple Salesforce login form that allows login without email verification",
   "main": "index.html",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint index.html"
   },
   "repository": {
     "type": "git",
