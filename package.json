@@ -1,0 +1,29 @@
+{
+  "name": "salesforce-login-no-verification",
+  "version": "1.0.0",
+  "description": "A simple Salesforce login form that allows login without email verification",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hrafven/salesforce-login-no-verification.git"
+  },
+  "keywords": [
+    "salesforce",
+    "login",
+    "login-screen"
+  ],
+  "author": "Hugo \"Hrafven\" Bidois",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Hrafven/salesforce-login-no-verification/issues"
+  },
+  "homepage": "https://github.com/Hrafven/salesforce-login-no-verification#readme",
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-html": "^6.1.2"
+  }
+}
