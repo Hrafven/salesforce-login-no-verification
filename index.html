@@ -2,98 +2,222 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salesforce login - No Verification</title>
-    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css">
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css">
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+
+    .switcher {
+      margin-bottom: 0;
+      padding: .75rem;
+      border-radius: 2rem;
+      box-shadow: var(--card-box-shadow);
+      line-height: 1;
+      text-align: right;
+    }
+
+    .switcher:after {
+      display: inline-block;
+      width: 1rem;
+      height: 1rem;
+      border: 0.15rem solid currentColor;
+      border-radius: 50%;
+      background: linear-gradient(to right, currentColor 0%, currentColor 50%, transparent 50%);
+      vertical-align: bottom;
+      content: '';
+      transition: transform var(--transition);
+    }
+
+    .info_container, .error {
+      display: none;
+    }
+
+    .error {
+      color: red;
+    }
+  </style>
+  <title>Salesforce login - No Verification</title>
 </head>
 
 <body>
-    <main class="container">
-        <h1>Salesforce login - No Verification</h1>
-        <h2>A simple Salesforce login form that allows login without email verification</h2>
+  <main class="container">
+    <header>
+      <nav>
+        <ul>
+          <li><strong>Salesforce login - No Verification</strong></li>
+        </ul>
+        <ul>
+          <li><a id="about_link" href="javascript:document.getElementById('about').scrollIntoView(true);">About</a></li>
+          <li><a target="_blank" href="https://github.com/Hrafven/salesforce-login-no-verification">Github</a></li>
+          <li><button id="switcher" class="switcher contrast"></button></li>
+        </ul>
+      </nav>
+    </header>
+    <article>
+      <div class="grid">
+        <div>
+          <form onsubmit="login(this); return false;" id="login_form" autocomplete="off">
+            <select name="org_type" id="org_type" required autofocus>
+              <option value="">Select organisation type</option>
+              <option value="login">Production</option>
+              <option value="test">Sandbox</option>
+            </select>
+            <input type="email" name="username" id="username" placeholder="Username" required>
+            <input type="password" name="password" id="password" placeholder="Password + security token" required>
+            <input type="submit" value="Login">
+          </form>
+        </div>
+        <div>
+          <h2>A simple Salesforce login form that allows login without email verification</h2>
+        </div>
+      </div>
+      <div id="info_container" class="info_container">
+        <a id="loading_text" href="#" aria-busy="true">Generating link, please wait…</a>
+      </div>
+      <p id="error" class="error"></p>
+    </article>
+    <article style="display: none;">
+      <h2 id="about">About Salesforce login - No Verification</h2>
+      <h3 id="what">What is 'Salesforce login - No Verification' ?</h3>
+      <p>A simple Salesforce login form that allows login without email verification</p>
+      <h3 id="why">Why ?</h3>
+      <p>Sometimes you don't have access to the verification, for example :</p>
+      <ul>
+        <li>You have disabled all emails</li>
+        <li>You are using someone else's user account</li>
+      </ul>
+      <h3 id="security">How about security ?</h3>
+      <p>This method is as safe as username:password login. It might even be more secure since you are required to provide your security token</p>
+      <h3 id="how">How ?</h3>
+      <p>This form calls the standard Salesforce SOAP API login method to retrieve a sessionId. Then it logs you in with the <em>https://&lt;endpoint host&gt;/secur/frontdoor.jsp?sid=&lt;session id&gt;</em> page</p>
+      <p>Source : <a target="_blank" href="https://help.salesforce.com/s/articleView?id=sf.security_frontdoorjsp.htm&type=5">https://help.salesforce.com/s/articleView?id=sf.security_frontdoorjsp.htm&type=5</a></p>
+    </article>
+    <footer>powered by Github and Pico.css | Under MIT license - This is not a Salesforce product</footer>
+  </main>
+  <script>
+    /**
+     * @param {String} nodeTagName
+     * @param {XMLDocument} xmlDoc
+     * @return {String} the text of an xml element
+    **/
+    function getElementTextByTagName(nodeTagName, xmlDoc) {
+      return xmlDoc.getElementsByTagName(nodeTagName)[0].childNodes[0].nodeValue;
+    }
+    /**
+     * @param {String} response
+    **/
+    function succesCallback(response) {
+      document.getElementById('info_container').style.display = 'block';
+      document.getElementById('loading_text').innerHTML = 'Redirecting...';
 
-        <article>
-            <form onsubmit="return login(this)" id="login_form">
-                <select name="org_type" id="org_type" required>
-                    <option value="">Select organisation type</option>
-                    <option value="login">Production</option>
-                    <option value="test">Sandbox</option>
-                </select>
-                <input type="text" name="username" id="username" placeholder="Username" required>
-                <input type="password" name="password" id="password" placeholder="Password + security token" required>
-                <input type="submit" value="Login">
-            </form>
-        </article>
-    </main>
-    <script>
-        function succesCallback(response) {
-            const parser = new DOMParser()
-            const xmlDoc = parser.parseFromString(response, "text/xml")
-            const sessionId = xmlDoc.getElementsByTagName('sessionId')[0].childNodes[0].nodeValue
-            console.log(sessionId, xmlDoc.getElementsByTagName('serverUrl')[0].childNodes[0].nodeValue)
-            const serverUrl = new URL(xmlDoc.getElementsByTagName('serverUrl')[0].childNodes[0].nodeValue)
-            const instanceUrl = serverUrl.hostname
-            document.location.href = `https://${instanceUrl}/secur/frontdoor.jsp?sid=${sessionId}`
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(response, 'text/xml');
+
+      const sessionId = getElementTextByTagName('sessionId', xmlDoc);
+      const serverUrl = new URL(getElementTextByTagName('serverUrl', xmlDoc));
+
+      const instanceUrl = serverUrl.hostname;
+      document.location.href = `https://${instanceUrl}/secur/frontdoor.jsp?sid=${sessionId}`;
+    }
+
+    /**
+     * @param {String} error
+    **/
+    function errorCallback(error) {
+      document.getElementById('info_container').style.display = 'none';
+      const errorElem = document.getElementById('error');
+      errorElem.style.display = 'block';
+      errorElem.innerHTML = error;
+    }
+
+    /**
+     * @param {HTMLFormElement} form
+     * @param {Boolean} disabled
+    **/
+    function setFormDisabled(form, disabled) {
+      for (const elem of form.elements) {
+        elem.disabled = disabled;
+      }
+    }
+
+    /**
+     * @param {HTMLFormElement} form
+    **/
+    async function login(form) { // eslint-disable-line no-unused-vars
+      document.getElementById('info_container').style.display = 'block';
+      const loginData = new FormData(form);
+
+      setFormDisabled(form, true);
+
+      const corsAnywhereURL = 'https://icom-cors-anywhere.herokuapp.com/';
+      const endpoint = `${corsAnywhereURL}https://${loginData.get('org_type')}.salesforce.com/services/Soap/u/52.0`;
+      const payload = `<?xml version="1.0" encoding="utf-8" ?> <env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/"> <env:Body> <n1:login xmlns:n1="urn:partner.soap.sforce.com"> <n1:username>${loginData.get('username')}</n1:username> <n1:password>${loginData.get('password')}</n1:password> </n1:login> </env:Body> </env:Envelope>`;
+      const headers = {
+        'Content-Type': 'text/xml',
+        'SOAPAction': 'login',
+        'charset': 'UTF-8',
+        'Accept': 'text/xml',
+      };
+      if (window.fetch) {
+        const response = await fetch(endpoint,
+            {
+              method: 'POST',
+              body: payload,
+              headers: new Headers(headers),
+              cache: 'default',
+              mode: 'cors',
+            });
+        const responseText = await response.text();
+        if (response.ok) {
+          succesCallback(responseText);
+        } else {
+          errorCallback(responseText);
         }
-
-        function errorCallback(error) {
-            // do error
+        setFormDisabled(form, false);
+      } else {
+        const xhttp = new XMLHttpRequest();
+        xhttp.open(
+            'POST',
+            endpoint,
+        );
+        for (const key in headers) {
+          if (Object.hasOwnProperty.call(headers, key)) {
+            const element = headers[key];
+            xhttp.setRequestHeader(key, element);
+          }
         }
-
-        function login(form) {
-            const loginData = new FormData(form)
-            const corsAnywhereURL = 'https://icom-cors-anywhere.herokuapp.com/'
-            const endpoint = `${corsAnywhereURL}https://${loginData.get('org_type')}.salesforce.com/services/Soap/u/52.0`
-            const payload = `<?xml version="1.0" encoding="utf-8" ?> <env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/"> <env:Body> <n1:login xmlns:n1="urn:partner.soap.sforce.com"> <n1:username>${loginData.get('username')}</n1:username> <n1:password>${loginData.get('password')}</n1:password> </n1:login> </env:Body> </env:Envelope>`
-            const headers = {
-                'Content-Type': 'text/xml',
-                'SOAPAction': 'login',
-                'charset': 'UTF-8',
-                'Accept': 'text/xml',
-            }
-            if (false && window.fetch) {
-                fetch(endpoint,
-                    {
-                        method: 'POST',
-                        body: payload,
-                        headers: new Headers(headers),
-                        cache: 'default',
-                        mode: 'cors',
-                    })
-                    .then((response) => {
-                        console.log(response)
-                    })
-                    .then((response) => {
-                        succesCallback(response)
-                    })
-                    .catch((error) => {
-                        errorCallback(error)
-                    })
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == 4 ) {
+            if (this.status == 200) {
+              succesCallback(xhttp.responseText);
             } else {
-                const xhttp = new XMLHttpRequest()
-                xhttp.open(
-                    'POST',
-                    endpoint,
-                )
-                for (const key in headers) {
-                    if (Object.hasOwnProperty.call(headers, key)) {
-                        const element = headers[key]
-                        xhttp.setRequestHeader(key, element)
-                    }
-                }
-                xhttp.onreadystatechange = function () {
-                    if (this.readyState == 4 && this.status == 200) {
-                        succesCallback(xhttp.responseText);
-                    }
-                }
-
-                xhttp.send(payload)
+              errorCallback(xhttp.responseText);
             }
-            event.preventDefault()
-        }
-    </script>
+            setFormDisabled(form, false);
+          }
+        };
+
+        xhttp.send(payload);
+      }
+    }
+    /**
+     * Function to switch css theme color
+    **/
+    function switchTheme() {
+      currentColor = (currentColor === 'light' ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', currentColor);
+    }
+    document.getElementById('switcher')
+        .addEventListener('click', (ev) => switchTheme());
+    document.getElementById('about_link').addEventListener('click', (ev) => {
+      document.getElementById('about').parentNode.style.display = 'block';
+    });
+    let currentColor = 'dark';
+  </script>
 </body>
 
 </html>
