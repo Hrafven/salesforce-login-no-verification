@@ -1,2 +1,4 @@
 User-Agent: *
 Allow: /
+
+Sitemap: https://hrafven.github.io/salesforce-login-no-verification/sitemap.xml
