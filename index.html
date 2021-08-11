@@ -216,7 +216,7 @@
     document.getElementById('about_link').addEventListener('click', (ev) => {
       document.getElementById('about').parentNode.style.display = 'block';
     });
-    const userPrefersLight = window.matchMedia && 
+    const userPrefersLight = window.matchMedia &&
           window.matchMedia('(prefers-color-scheme: light)').matches;
     let currentColor = userPrefersLight ? 'light' : 'dark';
     
@@ -224,9 +224,9 @@
       const aboutElem = document.getElementById('about');
       aboutElem.parentNode.style.display = 'block';
       aboutElem.scrollIntoView({
-        behavior: "instant",
-        block: "start",
-        inline: "nearest"
+        behavior: 'instant',
+        block: 'start',
+        inline: 'nearest',
       });
     }
   </script>
