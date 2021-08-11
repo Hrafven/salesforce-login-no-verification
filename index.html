@@ -216,7 +216,12 @@
     document.getElementById('about_link').addEventListener('click', (ev) => {
       document.getElementById('about').parentNode.style.display = 'block';
     });
-    let currentColor = 'dark';
+    const userPrefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+    let currentColor = userPrefersLight ? 'light' : 'dark';
+    
+    if (window.location.hash === '#about') {
+      document.getElementById('about').parentNode.style.display = 'block';
+    }
   </script>
 </body>
 
