@@ -2,7 +2,7 @@
 
 This is a form that allows you to log in to Salesforce without having to complete the verification step
 
-More info at https://la-team-bidouille.github.io//salesforce-login-no-verification#about
+More info at https://la-team-bidouille.github.io/salesforce-login-no-verification#about
 
 ## Depedencies
 
